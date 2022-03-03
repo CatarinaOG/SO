@@ -42,23 +42,20 @@ void mycat(){
         write(1,buffer,readBytes);
 
     free(buffer);
-
 }
 
 //---------------------------------Exercicio 3---------------------------------------
 
 ssize_t readln(int fd, char *line, size_t size){
-    size_t i = 0;
-    while(i < size - 1){
+    int i = 0;
 
-        size_t nbr = (size_t) read(fd,&line[i],sizeof(char));
-        if(nbr < 1) break;
-        if(line[i++] == '\n') break;
+    while(i < size && read(fd,&line[i],sizeof(char)) > 0){
+        i++;
+        if(((char*)line)[i-1] == '\n') return i;
     }
 
-    line[i] = '\0';
     printf("%s",line);
-    return (ssize_t) i;
+    return i;
 }
 
 
@@ -67,53 +64,67 @@ ssize_t readln(int fd, char *line, size_t size){
 //---------------------------------Exercicio 4---------------------------------------
 
 void mynl(){
+ 
+    int line_counter = 0;
+    char buffer[1024];
+    int bytes_read = 0;
+    int newline = 1;
 
-    int ind = 1;
-    int readBytes;
-    int bufferSize = 1024;
-    char* buffer = malloc(sizeof(char) * bufferSize);
+    while( (bytes_read = read(0,buffer,1024)) > 0){
+        char line_number[10] = "";
 
-    while( (readBytes = readln(0,buffer,bufferSize)) > 0 )
-        printf("%d: %s",ind++,buffer);
-    
-    free(buffer);
+        if(newline && buffer[0] != '\n'){
+            snprintf(line_number,10,"%d:",line_counter);
+            write(1,line_number,sizeof(line_number));
+            line_counter++;
+        }
+
+        write(1,buffer,bytes_read);
+    }
+
+    if(buffer[bytes_read] != '\n') newline = 0;
+    else newline = 1;
+
 }
 
 
-//---------------------------------Exercicio 5---------------------------------------
+
+
+//---------------------------------Exercicio 5--------------------------------------- Para confirmar
+
+#define MAX_SIZE 1024
+char read:buffer[MAX_SIZE];
+int buffer_end = 0;
+int buffer_pos = 0;
+
+int readc(int fd, char*c){
+
+    if(buffer_pos == buffer_end){
+        buffer_end = read(fd,read_buffer,MAX_SIZE);
+        buffer_pos = 0;
+    }
+
+    *c = read_buffer[buffer_pos++];
+
+}
 
 void readln2(int fd, char *line, size_t size){
 
-    int readBytes;
-    int posLine = 0;
-    int continua = 1; 
-    int posBuffer;
-    int bufferSize = 1024;
-    char* buffer = malloc(sizeof(char)*bufferSize);
+    int i = 0;
 
-    while( (readBytes = read(fd,buffer,bufferSize)) > 0){
-
-        for(int i=0 ; i<readBytes && continua; i++){
-            if(buffer[i] =='\n'){
-                posBuffer = i;
-                continua = 0;
-            }
-        }
-
-
-        for(int i=0 ; i<posBuffer ; i++){
-            line[posLine] = buffer[i];
-            posLine++;
-        }
-
-        lseek(fd,posBuffer-bufferSize,SEEK_CUR);
+    while(i < size && readc(fd,&line) > 0){
+        i++;
+        if(((char*)line)[i-1] == '\n') return i;
     }
+
+    printf("%s",line);
+    return i;
 }
 
 
 void mainReadln(){
 
-    int bufferSize = 1024;
+    int bufferSize = 10;
     char* buffer = malloc(sizeof(char) * bufferSize);
 
     int fd_from = open("hello.txt", O_RDONLY | O_CREAT, 0600);
@@ -125,6 +136,10 @@ void mainReadln(){
 
 
 
+//---------------------------------Exercicio 6---------------------------------------
+
+
+
 //---------------------------------Main---------------------------------------
 
 int main (int argc, char** argv){
@@ -133,7 +148,7 @@ int main (int argc, char** argv){
     //mycat();
     //mainReadln();
     //mynl();
-    mainReadln();
+    //mainReadln();
 
 }
 
