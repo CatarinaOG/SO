@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 
 
@@ -93,11 +94,11 @@ void mynl(){
 //---------------------------------Exercicio 5--------------------------------------- Para confirmar
 
 #define MAX_SIZE 1024
-char read:buffer[MAX_SIZE];
+char read_buffer[MAX_SIZE];
 int buffer_end = 0;
 int buffer_pos = 0;
 
-int readc(int fd, char*c){
+int readc(int fd, char* c){
 
     if(buffer_pos == buffer_end){
         buffer_end = read(fd,read_buffer,MAX_SIZE);
@@ -105,14 +106,15 @@ int readc(int fd, char*c){
     }
 
     *c = read_buffer[buffer_pos++];
-
+    return 1;
 }
 
-void readln2(int fd, char *line, size_t size){
+int readln2(int fd, char *line, size_t size){
 
     int i = 0;
+    char* c;
 
-    while(i < size && readc(fd,&line) > 0){
+    while(i < size && readc(fd,line+i) > 0){
         i++;
         if(((char*)line)[i-1] == '\n') return i;
     }
@@ -121,7 +123,6 @@ void readln2(int fd, char *line, size_t size){
     return i;
 }
 
-
 void mainReadln(){
 
     int bufferSize = 10;
@@ -129,28 +130,14 @@ void mainReadln(){
 
     int fd_from = open("hello.txt", O_RDONLY | O_CREAT, 0600);
 
-    readln(fd_from,buffer,bufferSize);
-    //readln2(fd_from,buffer,bufferSize);
-
+    //readln(fd_from,buffer,bufferSize);
+    readln2(fd_from,buffer,bufferSize);
 }
 
 
 
 //---------------------------------Exercicio 6---------------------------------------
 
-
-
-//---------------------------------Main---------------------------------------
-
-int main (int argc, char** argv){
-
-    //mycp();
-    //mycat();
-    //mainReadln();
-    //mynl();
-    //mainReadln();
-
-}
 
 
 
