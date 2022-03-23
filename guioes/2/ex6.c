@@ -16,6 +16,7 @@ int main (int argc, char** argv){
     int columns = 1000;
 
     int matrix [lines][columns];
+    int pids[lines];
 
     for( int i= 0 ; i<lines ; i++){
         for(int j = 0 ; j<columns ; j++){
@@ -30,18 +31,20 @@ int main (int argc, char** argv){
 
         if(pid == 0){
             for(int j = 0 ; j<columns ; j++){
-                if (matrix[i][j] == atoi(argv[1]))
+                if (matrix[i][j] == atoi(argv[1])){
                     _exit(i);
+                }
             }
             _exit(-1);
+        }
+        else{
+            pids[i] = pid;
         }
     }
 
     for(int i=0 ; i<lines ; i++){
-        pid_t pidFilho = waitpid(i,status,);
-
-        printf("PidFilho encontrou na linha %d\n",pidFilho);
-        
+        pid_t pidFilho = waitpid(pids[i],&status,0);
+        printf("PidFilho encontrou na linha %d\n",WEXITSTATUS(status));
     }
 
     end = clock();
