@@ -20,7 +20,7 @@ int main (int argc, char** argv){
 
     for( int i= 0 ; i<lines ; i++){
         for(int j = 0 ; j<columns ; j++){
-            matrix[i][j] = rand() % 10;
+            matrix[i][j] = rand() % 1000;
         }
     }
 
